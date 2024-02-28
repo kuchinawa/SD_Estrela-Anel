@@ -14,9 +14,6 @@ public class Servidor {
         this.rodar();
     }
     private void rodar() {
-        /*
-         * Cria um socket na porta 54321
-         */
         try {
             socketServidor = new ServerSocket(porta);
             System.out.println("Servidor rodando na porta " +
@@ -25,22 +22,11 @@ public class Servidor {
                     InetAddress.getLocalHost().getHostAddress());
             System.out.println("HostName = " +
                     InetAddress.getLocalHost().getHostName());
-            /*
-             * Aguarda alguém se conectar.
-             * A execução do servidor fica bloqueada na chamada
-             * do método accept da classe ServerSocket.
-             * Quando alguém se conectar ao
-             * servidor, o método desbloqueia e
-             * retorna com um objeto da classe Socket, que
-             * é uma porta da comunicação.
-             */
             System.out.println("Aguardando conexão do cliente...");
             while (true) {
                 cliente = socketServidor.accept();
-                // Cria uma thread do servidor para tratar a conexão
                 ImplServidor servidor = new ImplServidor(cliente);
                 Thread t = new Thread(servidor);
-                // Inicia a thread para o cliente conectado
                 ImplServidor.cont++;
                 t.start();
             }

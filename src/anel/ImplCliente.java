@@ -5,11 +5,11 @@ import java.io.PrintStream;
 import java.net.Socket;
 import java.util.Scanner;
 
-public class ImplCliente implements Runnable{
+public class ImplCliente implements Runnable {
     private Socket cliente;
     private boolean conexao = true;
     private PrintStream saida;
-    public ImplCliente(Socket c){
+    public ImplCliente(Socket c) {
         this.cliente = c;
     }
     public void run() {
