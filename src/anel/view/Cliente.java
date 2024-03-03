@@ -1,4 +1,4 @@
-package mvc.view;
+package anel.view;
 
 import java.io.IOException;
 import java.io.PrintStream;
@@ -29,31 +29,13 @@ public class Cliente implements Runnable {
             socket = new Socket("localhost", portaEuSouCliente);
             System.out.println("O cliente conectou ao servidor");
             seConectou = true;
-            // Prepara para leitura do teclado
             Scanner teclado = new Scanner(System.in);
-            // Cria objeto para enviar a mensagem ao servidor
             saida = new PrintStream(socket.getOutputStream());
-            // Cria objeto para receber a mensagem do servidor
-            //Scanner entrada = new Scanner(socket.getInputStream());
 
 
-            /*
-            // Thread para lidar com as mensagens recebidas do servidor
-            Thread threadReceberMensagens = new Thread(() -> {
-                while (conexao) {
-                    if (entrada.hasNextLine()) {
-                        String mensagemRecebida = entrada.nextLine();
-                        System.out.println("Mensagem do servidor: " + mensagemRecebida);
-                    }
-                }
-            });
-           // threadReceberMensagens.start();
-            */
-
-            // Envia mensagem ao servidor
             String mensagem;
             while (conexao) {
-                System.out.println("Digite a porta de destino (5001 a 5004): ");
+                System.out.println("Digite a porta de destino ou 0 para broadcast: ");
                 String portaDestino = teclado.nextLine();
                 System.out.println("Digite uma mensagem: ");
                 mensagem = teclado.nextLine();
@@ -61,19 +43,17 @@ public class Cliente implements Runnable {
                 if (mensagem.equalsIgnoreCase("fim")) {
                     conexao = false;
                 } else {
-                    System.out.println("Cliente: " + mensagem); // Mostra a mensagem enviada
+                    System.out.println("Mensagem: " + mensagem);
                     enviarMensagem(mensagem);
                 }
             }
-            // Finaliza recursos
             teclado.close();
-            //entrada.close();
             socket.close();
             System.out.println("Cliente finaliza conexão.");
         } catch (IOException e) {
             System.out.println("Falha ao conectar ao servidor. Tentando novamente em 4 segundos...");
             try {
-                Thread.sleep(4000); // Aguarda 10 segundos antes de tentar novamente
+                Thread.sleep(4000);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }

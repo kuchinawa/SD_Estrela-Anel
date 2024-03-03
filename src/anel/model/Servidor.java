@@ -1,6 +1,6 @@
-package mvc.model;
+package anel.model;
 
-import mvc.view.Cliente;
+import anel.view.Cliente;
 
 import java.io.IOException;
 import java.net.ServerSocket;
@@ -12,6 +12,7 @@ public class Servidor implements Runnable {
     private boolean conexao = true;
     private ServerSocket serverSocket;
     Cliente cliente;
+
 
     public Servidor(int porta, Cliente cliente) {
         this.porta = porta;
@@ -30,31 +31,41 @@ public class Servidor implements Runnable {
                 System.out.println("Servidor rodando na porta " + serverSocket.getLocalPort());
                 System.out.println("Aguardando conexão do cliente...");
 
-                while (true) {
+                while (conexao) {
                     Socket clienteSocket = serverSocket.accept();
                     System.out.println("Conexão com o cliente " + clienteSocket.getInetAddress().getHostAddress() + "/" + clienteSocket.getInetAddress().getHostName());
                     Thread t = new Thread(() -> {
                         try {
                             Scanner s = new Scanner(clienteSocket.getInputStream());
-                            // Exibe mensagem no console
                             while (conexao) {
                                 String mensagemRecebida = s.nextLine();
                                 String[] partesMensagem = mensagemRecebida.split(":");
-                                if (mensagemRecebida.equalsIgnoreCase("fim"))
+                                if (mensagemRecebida.equalsIgnoreCase("fim")) {
                                     conexao = false;
-                                else {
+                                } else {
                                     int origem = Integer.parseInt(partesMensagem[0]);
                                     int destino = Integer.parseInt(partesMensagem[1]);
-                                    int proximaPorta = cliente.getPortaEuSouCliente();
-                                    if(this.porta == destino) {
-                                        System.out.println("Mensagem recebida no servidor: " + mensagemRecebida);
+                                    int proximoDestino = cliente.getPortaEuSouCliente();
+                                    if (destino == 0){
+                                        if (proximoDestino == origem) {
+                                            System.out.println("Broadcast recebido do cliente "  + partesMensagem[0] + " -> " + partesMensagem[2]);
+                                        }
+                                        else{
+                                            System.out.println("Broadcast recebido do cliente "  + partesMensagem[0] + " -> " + partesMensagem[2]);
+                                            encaminharMensagem(mensagemRecebida);
+                                        }
                                     } else {
-                                        System.out.println("Encaminhando mensagem para frente");
-                                        encaminharMensagem(mensagemRecebida);
+                                        if (this.porta == destino) {
+                                            System.out.println("Mensagem recebida de " + partesMensagem[0] + " -> " + partesMensagem[2]);
+                                        }else if(this.porta != origem){
+                                            System.out.println("Encaminhando mensagem para frente");
+                                            encaminharMensagem(mensagemRecebida);
+                                        }else {
+                                            System.out.println("Mensagem não é para mim e não veio de mim");
+                                        }
                                     }
                                 }
                             }
-                            // Finaliza scanner e socket
                             s.close();
                             System.out.println("Fim do cliente " + clienteSocket.getInetAddress().getHostAddress());
                             clienteSocket.close();
@@ -72,10 +83,6 @@ public class Servidor implements Runnable {
     }
 
     private void encaminharMensagem(String mensagemRecebida) {
-        //int portaDestino = Integer.parseInt(partesMensagem[0]);
-        //String mensagem = partesMensagem[1];
-
-        // Implemente aqui o código para encaminhar a mensagem para o destino desejado
         cliente.enviarMensagem(mensagemRecebida);
     }
 }
