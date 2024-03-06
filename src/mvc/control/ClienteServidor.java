@@ -13,35 +13,25 @@ public class ClienteServidor {
         int porta4 = 5004;
 
         // Inicia servidor e cliente em threads separadas
-       // iniciarServidorCliente(porta1, porta2);
-       // iniciarServidorCliente(porta2, porta3);
-        iniciarServidorCliente(porta3, porta4);
-        //iniciarServidorCliente(porta4, porta1);
+      iniciarServidorCliente(porta1, porta2);
+          iniciarServidorCliente(porta2, porta3);
+           iniciarServidorCliente(porta3, porta4);
+          iniciarServidorCliente(porta4, porta1);
 
         // Thread para lidar com entrada de mensagens do usuário
-        new Thread(() -> {
-            Scanner scanner = new Scanner(System.in);
-            System.out.println("Digite a porta de destino (5001 a 5004): ");
-            int portaDestino = scanner.nextInt();
-            scanner.nextLine(); // Limpa o buffer
 
-            System.out.println("Digite a mensagem: ");
-            String mensagem = scanner.nextLine();
-            scanner.nextLine();
-
-            encaminharMensagem(portaDestino, mensagem);
-        }).start();
     }
 
     private static void iniciarServidorCliente(int portaServidor, int portaCliente) {
-        Thread servidorThread = new Thread(() -> {
-            Cliente cliente = new Cliente(portaCliente);
-            cliente.run();
+
+            Cliente cliente = new Cliente(portaCliente, portaServidor);
+            Thread thcliente = new Thread(cliente);
+            thcliente.start();
 
             Servidor servidor = new Servidor(portaServidor, cliente);
-            servidor.run(); // Inicia o servidor
-        });
-        servidorThread.start();
+            Thread thserver = new Thread(servidor);
+            thserver.start(); // Inicia o servidor
+
     }
 
     private static void encaminharMensagem(int portaDestino, String mensagem) {

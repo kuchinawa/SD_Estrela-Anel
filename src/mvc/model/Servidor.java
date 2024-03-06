@@ -43,8 +43,15 @@ public class Servidor implements Runnable {
                                 if (mensagemRecebida.equalsIgnoreCase("fim"))
                                     conexao = false;
                                 else {
-                                    System.out.println("Mensagem recebida no servidor: " + mensagemRecebida);
-                                    encaminharMensagem(partesMensagem);
+                                    int origem = Integer.parseInt(partesMensagem[0]);
+                                    int destino = Integer.parseInt(partesMensagem[1]);
+                                    int proximaPorta = cliente.getPortaEuSouCliente();
+                                    if(this.porta == destino) {
+                                        System.out.println("Mensagem recebida no servidor: " + mensagemRecebida);
+                                    } else {
+                                        System.out.println("Encaminhando mensagem para frente");
+                                        encaminharMensagem(mensagemRecebida);
+                                    }
                                 }
                             }
                             // Finaliza scanner e socket
@@ -64,11 +71,11 @@ public class Servidor implements Runnable {
         servidorThread.start();
     }
 
-    private void encaminharMensagem(String[] partesMensagem) {
-        int portaDestino = Integer.parseInt(partesMensagem[0]);
-        String mensagem = partesMensagem[1];
+    private void encaminharMensagem(String mensagemRecebida) {
+        //int portaDestino = Integer.parseInt(partesMensagem[0]);
+        //String mensagem = partesMensagem[1];
 
         // Implemente aqui o código para encaminhar a mensagem para o destino desejado
-        cliente.enviarMensagem(portaDestino + ":" + mensagem);
+        cliente.enviarMensagem(mensagemRecebida);
     }
 }
