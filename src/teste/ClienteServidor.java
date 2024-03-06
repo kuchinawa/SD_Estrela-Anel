@@ -2,7 +2,6 @@ package teste;
 
 import java.io.IOException;
 import java.io.PrintStream;
-import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Scanner;
@@ -13,7 +12,7 @@ public class ClienteServidor implements Runnable {
     private boolean conexao = true;
     private ServerSocket serverSocket;
     private Socket socket;
-    private InetAddress inet;
+    PrintStream saida;
 
     public ClienteServidor(int portaCliente, int portaServidor) {
         this.portaCliente = portaCliente;
@@ -22,7 +21,11 @@ public class ClienteServidor implements Runnable {
 
     public void run() {
         rodarServidor();
-        rodarCliente();
+        try {
+            rodarCliente();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     private void rodarServidor() {
@@ -30,8 +33,6 @@ public class ClienteServidor implements Runnable {
             try {
                 serverSocket = new ServerSocket(portaServidor);
                 System.out.println("Servidor rodando na porta " + serverSocket.getLocalPort());
-                System.out.println("HostAddress = " + InetAddress.getLocalHost().getHostAddress());
-                System.out.println("HostName = " + InetAddress.getLocalHost().getHostName());
                 System.out.println("Aguardando conexão do cliente...");
 
                 // Atraso de 2000 milissegundos (2 segundos)
@@ -49,7 +50,9 @@ public class ClienteServidor implements Runnable {
                                 if (mensagemRecebida.equalsIgnoreCase("fim"))
                                     conexao = false;
                                 else
-                                    System.out.println(mensagemRecebida);
+                                    System.out.println("Cliente " + " -> " + mensagemRecebida); // Mostra o contador
+
+                                saida.println(mensagemRecebida);
                             }
                             // Finaliza scanner e socket
                             s.close();
@@ -68,20 +71,17 @@ public class ClienteServidor implements Runnable {
         servidorThread.start();
     }
 
-    private void rodarCliente() {
+    private void rodarCliente() throws IOException {
+        saida = new PrintStream(socket.getOutputStream());
         Thread clienteThread = new Thread(() -> {
             while (true) {
                 try {
                     socket = new Socket("127.0.0.1", portaCliente);
-                    inet = socket.getInetAddress();
-                    System.out.println("HostAddress = " + inet.getHostAddress());
-                    System.out.println("HostName = " + inet.getHostName());
-
                     System.out.println("O cliente conectou ao servidor");
                     // Prepara para leitura do teclado
                     Scanner teclado = new Scanner(System.in);
                     // Cria objeto para enviar a mensagem ao servidor
-                    PrintStream saida = new PrintStream(socket.getOutputStream());
+
                     // Envia mensagem ao servidor
                     String mensagem;
                     while (conexao) {
@@ -90,18 +90,18 @@ public class ClienteServidor implements Runnable {
                         if (mensagem.equalsIgnoreCase("fim"))
                             conexao = false;
                         else
-                            System.out.println(mensagem);
+                            System.out.println("Cliente "+ " -> " + mensagem); // Mostra o contador
                         saida.println(mensagem);
                     }
                     saida.close();
                     teclado.close();
                     socket.close();
                     System.out.println("Cliente finaliza conexão.");
-                    break; // Se a conexão for bem-sucedida, sai do loop infinito
+                    break;
                 } catch (IOException e) {
                     System.out.println("Falha ao conectar ao servidor. Tentando novamente em 10 segundos...");
                     try {
-                        Thread.sleep(10000); // Aguarda 10 segundos antes de tentar novamente
+                        Thread.sleep(10000);
                     } catch (InterruptedException ex) {
                         ex.printStackTrace();
                     }
@@ -112,8 +112,8 @@ public class ClienteServidor implements Runnable {
     }
 
     public static void main(String[] args) {
-        int portaCliente = 5004; // Porta que o cliente vai tentar se conectar
-        int portaServidor = 5001; // Porta que o servidor vai abrir
+        int portaCliente = 5001 ; // Incrementa a porta do cliente
+        int portaServidor = 5002 ; // Incrementa a porta do servidor
 
         ClienteServidor clienteServidor = new ClienteServidor(portaCliente, portaServidor);
         clienteServidor.run();
