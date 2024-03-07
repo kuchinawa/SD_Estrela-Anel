@@ -12,16 +12,23 @@ public class Cliente {
         try (Socket socket = new Socket(HOST, PORTA)) {
             System.out.println("Conectado ao servidor");
 
+            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+            String identificador = entrada.readLine(); // Receber identificador atribuído pelo servidor
+            System.out.println("Seu identificador é: " + identificador);
+
             Thread receberThread = new Thread(new ReceberMensagens(socket));
             receberThread.start();
 
             PrintWriter saida = new PrintWriter(socket.getOutputStream(), true);
             Scanner scanner = new Scanner(System.in);
 
-            String mensagem;
+            String mensagem="", destinatario="";
             do {
-                System.out.print("Digite a mensagem: ");
+                System.out.println("Digite ao destinatário (ou '0' para broadcast)");
+                destinatario = scanner.nextLine();
+                System.out.println("Digite a mensagem (ou 'fim' para sair): ");
                 mensagem = scanner.nextLine();
+                mensagem = destinatario + ":" + mensagem;
                 saida.println(mensagem);
             } while (!mensagem.equalsIgnoreCase("fim"));
 

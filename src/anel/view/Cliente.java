@@ -35,6 +35,7 @@ public class Cliente implements Runnable {
 
             String mensagem;
             while (conexao) {
+                System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 System.out.println("Digite a porta de destino ou 0 para broadcast: ");
                 String portaDestino = teclado.nextLine();
                 System.out.println("Digite uma mensagem: ");
@@ -45,6 +46,8 @@ public class Cliente implements Runnable {
                 } else {
                     System.out.println("Mensagem: " + mensagem);
                     enviarMensagem(mensagem);
+
+                    System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
                 }
             }
             teclado.close();
