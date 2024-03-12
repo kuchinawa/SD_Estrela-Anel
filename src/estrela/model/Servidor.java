@@ -6,14 +6,15 @@ import java.util.*;
 
 public class Servidor {
     private final int porta;
-    private final Map<String, Socket> clientes; // Usando Map para associar identificadores aos clientes
+    private final Map<String, Socket> clientes;
 
-    private int contadorClientes; // Para contar o número de clientes conectados
+    private int contadorClientes;
 
     public Servidor(int porta) {
         this.porta = porta;
         this.clientes = new HashMap<>();
         this.contadorClientes = 0;
+        iniciar();
     }
 
     public void iniciar() {
@@ -27,7 +28,6 @@ public class Servidor {
                 clientes.put(identificador, clienteSocket);
                 System.out.println("Novo cliente conectado: " + identificador);
 
-                // Envia o identificador para o cliente
                 PrintWriter saida = new PrintWriter(clienteSocket.getOutputStream(), true);
                 saida.println(identificador);
 
@@ -58,11 +58,11 @@ public class Servidor {
 
                     String mensagem = entrada.readLine();
                     String partes[] = mensagem.split(":");
-                    if (partes[1].equals("fim")) {
+                    if (partes[0].equals("fim")) {
                         conexao=false;
                     }
                     if(partes[0].equals("0")) {
-                        System.out.println("Mensagem recebida de " + identificador + ": " + partes[1]);
+                        System.out.println("Mensagem recebida via broadcast de " + identificador + ": " + partes[1]);
                         encaminharMensagemBroadcast(identificador, partes[1], partes[0]);
                     } else {
                         System.out.println("Mensagem recebida de " + identificador + ": " + partes[1]);
@@ -96,13 +96,14 @@ public class Servidor {
                 }
             }
             if(encontrou == false){
-                System.out.println("Destinatario não encontrade");
+                System.out.println("“Erro na entrada de\n" +
+                        " dados. Tente outra vez!");
             }
         }
         private void encaminharMensagemBroadcast(String remetente, String mensagem, String destinatarioMsg) {
             for (Map.Entry<String, Socket> entry : clientes.entrySet()) {
                 String destinatario = entry.getKey();
-                if (!destinatario.equals(remetente)) { // Evita enviar a mensagem de volta para o remetente
+                if (!destinatario.equals(remetente)) {
                     try {
                         PrintWriter saida = new PrintWriter(entry.getValue().getOutputStream(), true);
                         saida.println(remetente + ": " + mensagem);
@@ -114,8 +115,4 @@ public class Servidor {
         }
     }
 
-    public static void main(String[] args) {
-        Servidor servidor = new Servidor(5000);
-        servidor.iniciar();
-    }
 }

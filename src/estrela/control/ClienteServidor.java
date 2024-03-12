@@ -5,8 +5,8 @@ import estrela.view.Cliente;
 
 public class ClienteServidor {
     public static void main(String[] args) {
-        int portaServidor = 5000;
+     //  Servidor servidor = new Servidor(5000);
 
-        int portaCliente = 5001;
+        Cliente cliente = new Cliente("localhost", 5000);
     }
 }

@@ -12,8 +12,8 @@ public class Cliente implements Runnable {
     private Socket socket;
     private PrintStream saida;
 
-    public Cliente(int portaServidor, int portaMeuServer) {
-        this.portaEuSouCliente = portaServidor;
+    public Cliente(int portaCliente, int portaMeuServer) {
+        this.portaEuSouCliente = portaCliente;
         this.portaMeuServer = portaMeuServer;
     }
 

@@ -25,7 +25,6 @@ public class Servidor implements Runnable {
     }
 
     private void rodarServidor() {
-        Thread servidorThread = new Thread(() -> {
             try {
                 serverSocket = new ServerSocket(porta);
                 System.out.println("Servidor rodando na porta " + serverSocket.getLocalPort());
@@ -61,7 +60,7 @@ public class Servidor implements Runnable {
                                             System.out.println("Encaminhando mensagem para frente");
                                             encaminharMensagem(mensagemRecebida);
                                         }else {
-                                            System.out.println("Mensagem não é para mim e não veio de mim");
+                                            System.out.println("“Erro na entrada de dados. Tente outra vez!");
                                         }
                                     }
                                 }
@@ -78,8 +77,6 @@ public class Servidor implements Runnable {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-        });
-        servidorThread.start();
     }
 
     private void encaminharMensagem(String mensagemRecebida) {

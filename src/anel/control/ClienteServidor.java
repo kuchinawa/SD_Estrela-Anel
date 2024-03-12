@@ -10,10 +10,10 @@ public class ClienteServidor {
         int porta3 = 5003;
         int porta4 = 5004;
 
-     // iniciarServidorCliente(porta1, porta2);
-     //   iniciarServidorCliente(porta2, porta3);
-       //   iniciarServidorCliente(porta3, porta4);
-          iniciarServidorCliente(porta4, porta1);
+  //   iniciarServidorCliente(porta1, porta2);
+//        iniciarServidorCliente(porta2, porta3);
+//        iniciarServidorCliente(porta3, porta4);
+         iniciarServidorCliente(porta4, porta1);
     }
 
     private static void iniciarServidorCliente(int portaServidor, int portaCliente) {

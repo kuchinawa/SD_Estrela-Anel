@@ -1,19 +1,26 @@
 package estrela.view;
 
-import java.io.*;
-import java.net.*;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.PrintWriter;
+import java.net.Socket;
 import java.util.Scanner;
 
 public class Cliente {
-    public static void main(String[] args) {
-        final String HOST = "localhost";
-        final int PORTA = 5000;
+    String HOST;
+    int PORTA;
+    public Cliente(String HOST, int PORTA){
+        this.HOST = HOST;
+        this.PORTA = PORTA;
+        iniciar();
+    }
 
+    public void iniciar(){
         try (Socket socket = new Socket(HOST, PORTA)) {
             System.out.println("Conectado ao servidor");
 
-            BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            String identificador = entrada.readLine(); // Receber identificador atribuído pelo servidor
+            Scanner entrada = new Scanner(new InputStreamReader(socket.getInputStream()));
+            String identificador = entrada.nextLine();
             System.out.println("Seu identificador é: " + identificador);
 
             Thread receberThread = new Thread(new ReceberMensagens(socket));
@@ -22,7 +29,7 @@ public class Cliente {
             PrintWriter saida = new PrintWriter(socket.getOutputStream(), true);
             Scanner scanner = new Scanner(System.in);
 
-            String mensagem="", destinatario="";
+            String mensagem = "", destinatario = "";
             do {
                 System.out.println("Digite ao destinatário (ou '0' para broadcast)");
                 destinatario = scanner.nextLine();
@@ -48,10 +55,10 @@ public class Cliente {
         @Override
         public void run() {
             try {
-                BufferedReader entrada = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                Scanner entrada = new Scanner(new InputStreamReader(socket.getInputStream()));
 
-                String mensagem;
-                while ((mensagem = entrada.readLine()) != null) {
+                while (entrada.hasNextLine()) {
+                    String mensagem = entrada.nextLine();
                     System.out.println("Mensagem recebida do servidor: " + mensagem);
                 }
 
@@ -62,4 +69,3 @@ public class Cliente {
         }
     }
 }
-
